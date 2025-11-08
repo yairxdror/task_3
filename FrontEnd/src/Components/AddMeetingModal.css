@@ -1,0 +1,89 @@
+h4{
+    color: #242424;
+    margin-bottom: 0px;
+}
+
+.modal-title {
+    margin-bottom: 10px;
+    margin-top: 0px;
+     color: #242424;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-box {
+    background: #fff;
+    padding: 16px;
+    border-radius: 6px;
+    width: 380px;
+    max-width: 90%;
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+.modal-error {
+    color: crimson;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.modal-form {
+    display: grid;
+    gap: 10px;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.modal-textarea {
+    width: 100%;
+    padding: 6px;
+    min-height: 60px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.btn-secondary {
+    background: #242424;
+    border: 1px solid #ddd;
+    padding: 6px 14px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #0d6efd;
+    border: none;
+    color: #fff;
+    padding: 6px 14px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.btn-primary:hover {
+    background: #0b5ed7;
+}
