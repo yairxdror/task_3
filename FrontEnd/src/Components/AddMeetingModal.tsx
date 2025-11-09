@@ -6,151 +6,151 @@ import "./AddMeetingModal.css";
 const ROOMS = ["Innovation Hub", "Main Hall", "Tech Lab", "Project Room"];
 
 type AddMeetingModalProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    groups: Group[];
-    defaultGroupId?: number;
-    onAdded?: (groupId: number) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  groups: Group[];
+  selectedGroupId?: number;
+  onAdded?: (groupId: number) => void;
 };
 
 export default function AddMeetingModal({
-    isOpen,
-    onClose,
-    groups,
-    defaultGroupId,
-    onAdded,
+  isOpen,
+  onClose,
+  groups,
+  selectedGroupId,
+  onAdded,
 }: AddMeetingModalProps) {
-    const [formGroupId, setFormGroupId] = useState<number | "">("");
-    const [formStart, setFormStart] = useState("");
-    const [formEnd, setFormEnd] = useState("");
-    const [formDesc, setFormDesc] = useState("");
-    const [formRoom, setFormRoom] = useState(ROOMS[0]);
-    const [error, setError] = useState("");
+  const [groupId, setGroupId] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [room, setRoom] = useState<string>(ROOMS[0]);
+  const [description, setDescription] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-    useEffect(() => {
-        if (isOpen) {
-            setFormGroupId(defaultGroupId ?? "");
-            setFormStart("");
-            setFormEnd("");
-            setFormDesc("");
-            setFormRoom(ROOMS[0]);
-            setError("");
-        }
-    }, [isOpen, defaultGroupId]);
+  useEffect(() => {
+    if (isOpen) {
+      setGroupId(
+        typeof selectedGroupId === "number" ? String(selectedGroupId) : ""
+      );
+      setStartDate("");
+      setEndDate("");
+      setRoom(ROOMS[0]);
+      setDescription("");
+      setError("");
+    }
+  }, [isOpen, selectedGroupId]);
 
-    if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        setError("");
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
 
-        if (!formGroupId || !formStart || !formEnd || !formRoom) {
-            setError("All required fields must be filled in.");
-            return;
-        }
-
-        try {
-            await addNewMeeting({
-                startDate: formStart,
-                endDate: formEnd,
-                description: formDesc,
-                room: formRoom,
-                groupCode: formGroupId,
-            });
-
-            if (onAdded) {
-                onAdded(formGroupId);
-            }
-
-            onClose();
-        } catch (e: any) {
-            setError(e?.message || "Failed to add meeting");
-        }
+    if (!groupId || !startDate || !endDate) {
+      setError("Please fill in all required fields");
+      return;
     }
 
-    return (
-        <div className="modal-backdrop">
-            <div className="modal-box">
-                <h3 className="modal-title">Add a new meeting</h3>
+    try {
+      await addNewMeeting({
+        startDate,
+        endDate,
+        description,
+        room,
+        groupCode: Number(groupId),
+      });
 
-                {error && <div className="modal-error">{error}</div>}
+      if (onAdded) {
+        onAdded(Number(groupId));
+      }
 
-                <form onSubmit={handleSubmit} className="modal-form">
-                    <label className="modal-field">
-                        <h4>group</h4>
-                        <select
-                            value={formGroupId}
-                            onChange={e => setFormGroupId(e.target.value ? Number(e.target.value) : "")}
-                            className="modal-input"
-                        >
-                            <option value="">Select a group</option>
-                            {groups.map(g => (
-                                <option key={g.id} value={g.id}>
-                                    {g.groupName}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+      onClose();
+    } catch (err) {
+      setError("The meeting could not be added.");
+    }
+  }
 
-                    <label className="modal-field">
-                        <h4>room</h4>
-                        <select
-                            value={formRoom}
-                            onChange={e => setFormRoom(e.target.value)}
-                            className="modal-input"
-                        >
-                            {ROOMS.map(room => (
-                                <option key={room} value={room}>
-                                    {room}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+  return (
+    <div className="modal-backdrop">
+      <div className="modal-box">
+        <h3 className="modal-title">Add a new meeting</h3>
 
-                    <label className="modal-field">
-                        <h4>Start date</h4>
-                        <input
-                            type="datetime-local"
-                            value={formStart}
-                            onChange={e => setFormStart(e.target.value)}
-                            className="modal-input"
-                            autoComplete="off"
-                        />
-                    </label>
+        {error && <div className="modal-error">{error}</div>}
 
-                    <label className="modal-field">
-                        <h4>End date</h4>
-                        <input
-                            type="datetime-local"
-                            value={formEnd}
-                            onChange={e => setFormEnd(e.target.value)}
-                            className="modal-input"
-                            autoComplete="off"
-                        />
-                    </label>
+        <form onSubmit={handleSubmit} className="modal-form">
+          <label className="modal-field">
+            <h4>Group</h4>
+            <select
+              value={groupId}
+              onChange={e => setGroupId(e.target.value)}
+              className="modal-input"
+            >
+              <option value="">Select a group</option>
+              {groups.map(g => (
+                <option key={g.id} value={g.id}>
+                  {g.groupName}
+                </option>
+              ))}
+            </select>
+          </label>
 
-                    <label className="modal-field">
-                        <h4>Description</h4>
-                        <textarea
-                            value = {formDesc}
-                            onChange = {e => setFormDesc(e.target.value)}
-                            className = "modal-textarea"
-                            placeholder = "Meeting description (optional)"
-                        />
-                    </label>
+          <label className="modal-field">
+            <h4>Room</h4>
+            <select
+              value={room}
+              onChange={e => setRoom(e.target.value)}
+              className="modal-input"
+            >
+              {ROOMS.map(r => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </label>
 
+          <label className="modal-field">
+            <h4>Start date</h4>
+            <input
+              type="datetime-local"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+              className="modal-input"
+            />
+          </label>
 
+          <label className="modal-field">
+            <h4>End date</h4>
+            <input
+              type="datetime-local"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              className="modal-input"
+            />
+          </label>
 
-                    <div className="modal-actions">
-                        <button type="button" onClick={onClose} className="btn-secondary">
-                            Cancel
-                        </button>
-                        <button type="submit" className="btn-primary">
-                            Save
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+          <label className="modal-field">
+            <h4>Description</h4>
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              className="modal-textarea"
+              placeholder="optional"
+            />
+          </label>
+
+          <div className="modal-actions">
+            <button type="button" onClick={onClose} className="btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

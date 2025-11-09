@@ -44,8 +44,8 @@ export default function Home() {
       try {
         const data = await getGroups();
         setGroups(data);
-      } catch (e: any) {
-        setError(e?.message || "Failed to load groups");
+      } catch (err: any) {
+        setError(err?.message || "Unable to load groups");
       }
     }
     loadGroups();
@@ -55,13 +55,13 @@ export default function Home() {
     try {
       const data = await getMeetings(groupId);
       setMeetings(data);
-    } catch (e: any) {
-      setError(e?.message || "Failed to load meetings");
+    } catch (err: any) {
+      setError(err?.message || "Unable to load meetings");
     }
   }
 
-  async function handleSelect(groupIdStr: string) {
-    const groupId = groupIdStr ? Number(groupIdStr) : "";
+  async function handleSelect(value: string) {
+    const groupId = value ? Number(value) : "";
     setSelectedGroupId(groupId);
     setMeetings([]);
     setError("");
@@ -85,7 +85,7 @@ export default function Home() {
     }
   }
 
-  const selectedGroupName =
+  const currentGroupName =
     typeof selectedGroupId === "number"
       ? groups.find(g => g.id === selectedGroupId)?.groupName
       : "";
@@ -98,15 +98,14 @@ export default function Home() {
 
       <div className="controls-row">
         <select
-          id="groupSelect"
           onChange={e => handleSelect(e.target.value)}
           value={selectedGroupId}
           className="group-select"
         >
           <option value="">- Select a group -</option>
-          {groups.map(group => (
-            <option key={group.id} value={group.id}>
-              {group.groupName}
+          {groups.map(g => (
+            <option key={g.id} value={g.id}>
+              {g.groupName}
             </option>
           ))}
         </select>
@@ -120,7 +119,7 @@ export default function Home() {
 
       {typeof selectedGroupId === "number" && (
         <section className="meetings-section">
-          <h2 className="meetings-title">{selectedGroupName}</h2>
+          <h2 className="meetings-title">{currentGroupName}</h2>
 
           {meetings.length === 0 && (
             <div className="empty-state">No meetings found for this group</div>
@@ -137,12 +136,12 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {meetings.map(meeting => (
-                  <tr key={meeting.id}>
-                    <td className="table-td">{formatDate(meeting.startDate)}</td>
-                    <td className="table-td">{formatDate(meeting.endDate)}</td>
-                    <td className="table-td">{meeting.room}</td>
-                    <td className="table-td">{meeting.description || "-"}</td>
+                {meetings.map(m => (
+                  <tr key={m.id}>
+                    <td className="table-td">{formatDate(m.startDate)}</td>
+                    <td className="table-td">{formatDate(m.endDate)}</td>
+                    <td className="table-td">{m.room}</td>
+                    <td className="table-td">{m.description || "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -155,7 +154,9 @@ export default function Home() {
         isOpen={showModal}
         onClose={handleCloseModal}
         groups={groups}
-        defaultGroupId={typeof selectedGroupId === "number" ? selectedGroupId : undefined}
+        selectedGroupId={
+          typeof selectedGroupId === "number" ? selectedGroupId : undefined
+        }
         onAdded={handleMeetingAdded}
       />
     </div>
